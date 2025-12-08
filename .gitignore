@@ -1,0 +1,5 @@
+.idea
+INP/*
+OUT/*
+!INP/.gitkeep
+!OUT/.gitkeep
