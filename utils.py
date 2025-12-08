@@ -8,6 +8,16 @@ from tqdm import tqdm
 with open("settings.json", "r") as file:
     settings = json.load(file)
 
+class SortingFiles:
+    def __init__(self):
+        with open(settings["bad_tlds_list"], 'r') as file:
+            bad_tlds = file.readlines()
+
+        with open(settings["bad_domains_list"], 'r') as file:
+            domains = file.readlines()
+
+        self.tlds = bad_tlds
+        self.domains = domains
 
 class FileControl:
     def __init__(self):
@@ -53,6 +63,7 @@ class SizeControl:
 
 size_control = SizeControl(settings["restrictions_lines_per_one_file"])
 file_control = FileControl()
+sorting_files = SortingFiles()
 
 def check_start_dirs() -> bool:
     if os.path.isdir(settings['input_dir']) and os.path.isdir(settings['output_dir']):
@@ -84,28 +95,26 @@ def get_input_files() -> list:
 def sorting_ulp_list(file_name: str):
     input_file = os.path.join(settings["input_dir"], file_name)
 
-    # Read bad tlds once
-    with open(settings["bad_tlds_list"], "r", encoding="utf-8") as f:
-        bad_tlds = {line.strip() for line in f}
-
     total = sum(1 for _ in open(input_file, 'r', errors="replace"))
 
     with open(input_file, "r", encoding="utf-8", errors="replace") as f:
         for fline in tqdm(f, total=total):
+
             line = fline.strip()
-            if len(line) < 5: continue
-            clean = line.replace(" ", "")
+            clean_line = line.replace(" ", "")
+            if not len(clean_line.split("@")) > 1: continue
 
-            # Check useful endpoints
-            if any(ue in line for ue in settings["useful_endpoints"]):
+            domain = clean_line.split("@")[1].split(":")[0].lower()
 
-                # Check bad tlds
-                if not any(b + "." in line or b + "/" in line or b + "\\" in line for b in bad_tlds):
-                    save_list(clean.strip())
+            if len(domain) < 2: continue
+
+            if not any(ue in domain for ue in sorting_files.domains):
+                if not any(b + "." in line or b + "/" in line or b + "\\" in domain for b in sorting_files.tlds):
+                    save_list(clean_line.strip())
                 else:
-                    save_trash_list(clean.strip())
+                    save_trash_list(clean_line.strip())
             else:
-                save_trash_list(clean.strip())
+                save_trash_list(clean_line.strip())
 
     return True
 

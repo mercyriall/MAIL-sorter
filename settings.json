@@ -2,8 +2,6 @@
   "input_dir": "INP",
   "output_dir": "OUT",
   "restrictions_lines_per_one_file": 1000000,
-  "useful_endpoints": [
-    "/wp-admin", "/wp-login.php", "wp-login"
-  ],
-  "bad_tlds_list": "bad_tlds.txt"
+  "bad_tlds_list": "bad_tlds.txt",
+  "bad_domains_list": "bad_domains.txt"
 }

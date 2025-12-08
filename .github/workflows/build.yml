@@ -22,25 +22,26 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt pyinstaller
+        run: pip install -r requirements.txt
 
       - name: Build EXE with icon and extra directories
-        run: pyinstaller --onefile main.py --name ulp-sorter --icon=icon.ico
+        run: pyinstaller --onefile main.py --name mail-sorter --icon=icon.ico
 
       - name: Create folder
         run: |
           mkdir package
-          copy dist\ulp-sorter.exe package\
+          copy dist\mail-sorter.exe package\
           Copy-Item -Path "INP" -Destination "package\INP" -Recurse -Force
           Copy-Item -Path "OUT" -Destination "package\OUT" -Recurse -Force
           Copy-Item -Path "settings.json" -Destination "package\" -Force
           Copy-Item -Path "bad_tlds.txt" -Destination "package\" -Force
+          Copy-Item -Path "bad_domains.txt" -Destination "package\" -Force
 
       - name: Create zip
         shell: pwsh
-        run: Compress-Archive -Path "package/*" -DestinationPath "ULP-sorter.zip"
+        run: Compress-Archive -Path "package/*" -DestinationPath "MAIL-sorter.zip"
 
       - name: Upload ZIP to Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ULP-sorter.zip
+          files: MAIL-sorter.zip
