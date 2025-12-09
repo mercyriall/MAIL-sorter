@@ -108,8 +108,8 @@ def sorting_ulp_list(file_name: str):
 
             if len(domain) < 2: continue
 
-            if not any(ue in domain for ue in sorting_files.domains):
-                if not any(b + "." in line or b + "/" in line or b + "\\" in domain for b in sorting_files.tlds):
+            if not any(ue.strip() in "@" + domain for ue in sorting_files.domains):
+                if not any(b.strip() in domain for b in sorting_files.tlds):
                     save_list(clean_line.strip())
                 else:
                     save_trash_list(clean_line.strip())
